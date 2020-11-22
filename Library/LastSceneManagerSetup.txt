@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Prototype 1/Scenes/MainGame.unity
+- path: Assets/Scene/GameOver.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

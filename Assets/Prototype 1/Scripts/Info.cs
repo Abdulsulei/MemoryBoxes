@@ -9,6 +9,7 @@ using TMPro;
 public class Info : MonoBehaviour
 {
     private string word1 = "GEN";
+    [SerializeField]
     private int winStreak = 0;
     [Header("Tutorial UI stuff")]
     [Space]
@@ -22,8 +23,8 @@ public class Info : MonoBehaviour
     [SerializeField] Sprite[] images;
     [SerializeField] GameObject disgrace;
     [SerializeField] TextMeshProUGUI scoreText;
-    [SerializeField] Text scoreN_Text;
-    [SerializeField] Text streakText;
+    [SerializeField] TextMeshProUGUI scoreN_Text;
+    [SerializeField] TextMeshProUGUI streakText;
 
     [SerializeField] float secondsToReloadScene = 3f;
 
@@ -34,11 +35,12 @@ public class Info : MonoBehaviour
 
 
     private void Start()
-    {            
+    {       
         source = GetComponent<AudioSource>();
         startReward = rewardBox.transform;
         Time.timeScale = 0.5f;
         score = 0;
+        PlayerPrefs.SetInt("Score", score);
     }
     public void AddTimesCorrect()
     {
@@ -47,6 +49,13 @@ public class Info : MonoBehaviour
         highest++;
 
         score +=100*multiplier();
+        PlayerPrefs.SetInt("Score", score);
+        int HighScore = PlayerPrefs.GetInt("HighScore");
+        if (HighScore < score)
+        {
+            HighScore = score;
+        }
+        PlayerPrefs.SetInt("HighScore", HighScore);
         int x = 100 * multiplier();
         Time.timeScale+= 0.1f;
 
@@ -80,7 +89,7 @@ public class Info : MonoBehaviour
 
     IEnumerator ShowRewardText(string rewardText)
     {
-        Text textBox = rewardBox.GetComponent<Text>();
+        TextMeshProUGUI textBox = rewardBox.GetComponent<TextMeshProUGUI>();
         Animator anim = textBox.GetComponent<Animator>();        
         textBox.text = rewardText;
         anim.Play("Show");
@@ -93,13 +102,13 @@ public class Info : MonoBehaviour
 
     public void Showdisgrace()
     {        
-        disgrace.SetActive(true);       
-        scoreText.text = highest.ToString();        
-        Invoke("restart", secondsToReloadScene);
+        //disgrace.SetActive(true);       
+        //scoreText.text = highest.ToString();        
+        Invoke("restart", 0);
     }
     void restart()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(2);
     }
   
     IEnumerator TutorialShow(GameObject screen)

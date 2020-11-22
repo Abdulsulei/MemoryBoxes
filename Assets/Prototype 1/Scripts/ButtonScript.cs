@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class ButtonScript : MonoBehaviour
 {
+    public Sprite Day, Night;
+    public Sprite Selected_Sprite;
+    public DayChangingScript DCS;
     PlayerController manager;
     Animator animator;
     Button thisButton;
@@ -32,17 +35,30 @@ public class ButtonScript : MonoBehaviour
     public void ShowSelected()
     {
         Button but = GetComponent<Button>();
+        but.image.sprite = Selected_Sprite;
         but.Select();
     }
-
+    public void Reset_Tile()
+    {
+        //to check is deselect called or not
+        if (DCS.isDay== true)
+        {
+            this.GetComponent<Button>().image.sprite = Day;
+        }
+        else
+        {
+            this.GetComponent<Button>().image.sprite = Night;
+        }
+    }
     public void PressedBox()
     {
+        Button but = GetComponent<Button>();
+        but.image.sprite = Selected_Sprite;
         manager = FindObjectOfType<PlayerController>();
         manager.Recognise(this);
     }
     public void ColorChanger()
     {
-        
         ColorBlock cBlock = thisButton.colors;
         cBlock.pressedColor = wrongColor;
         cBlock.selectedColor = wrongColor;
@@ -52,6 +68,7 @@ public class ButtonScript : MonoBehaviour
     public void ResetColors()
     {
         thisButton.colors = temp;
+        Reset_Tile();
     }
     public void SwitchOn(bool color)
     {

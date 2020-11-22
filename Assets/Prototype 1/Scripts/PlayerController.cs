@@ -23,7 +23,9 @@ public class PlayerController : MonoBehaviour
     AudioSource source;
     Info info;
     bool canRestart = true;
+    public bool LoopWorking;
 
+    public DayChangingScript DCS;
 
     void Start()
     {
@@ -33,7 +35,12 @@ public class PlayerController : MonoBehaviour
     #region GamePlay
     IEnumerator PlayNotes()
     {
+        LoopWorking = true;
         for (int i = 0; i < buttons.Length; i++)
+        {
+            buttons[i].GetComponent<Button>().interactable = false;
+        }
+            for (int i = 0; i < buttons.Length; i++)
         {
             if (!GameManager.hasFinishedTutorial)
             {
@@ -42,7 +49,6 @@ public class PlayerController : MonoBehaviour
                 buttons[i].ShowSelected();
                 toPress.Add(i);
                 yield return new WaitForSeconds(source.clip.length);
-
             }
             else
             {
@@ -54,7 +60,12 @@ public class PlayerController : MonoBehaviour
                 yield return new WaitForSeconds(source.clip.length);
             }
         }
+        LoopWorking = false;
         waiting = true;
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            buttons[i].GetComponent<Button>().interactable = true;
+        }
         StartCoroutine(Timer());
     }
 
@@ -88,12 +99,20 @@ public class PlayerController : MonoBehaviour
 
     void NormalExecution()
     {
+        StartCoroutine(Normal_Execution_Coroutine());
+    }
+    IEnumerator Normal_Execution_Coroutine()
+    {
+        while (DCS.Day_Change_Start == true)
+        {
+            yield return new WaitForSeconds(0.001f);
+        }
         timerImage.fillAmount = 0f;
         source = GetComponent<AudioSource>();
         StartCoroutine(PlayNotes());
         info = FindObjectOfType<Info>();
+        yield return null;
     }
-
     public void Recognise(ButtonScript button)
     {
         if (waiting)
@@ -191,6 +210,14 @@ public class PlayerController : MonoBehaviour
     void StartAgain()
     {
         //Reset Every counter then go on
+        StartCoroutine(Start_Coroutine());
+    }
+    IEnumerator Start_Coroutine()
+    {
+        while(DCS.Day_Change_Start == true)
+        {
+            yield return new WaitForSeconds(0.001f);
+        }
         timerSource.Stop();
         toPress.Clear();
         pressed.Clear();
@@ -199,6 +226,7 @@ public class PlayerController : MonoBehaviour
         ResetColors();
         ResetTimer();
         StartCoroutine(PlayNotes());
+        yield return null;
     }
     #endregion
 
